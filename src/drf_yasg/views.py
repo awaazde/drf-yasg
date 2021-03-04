@@ -84,7 +84,7 @@ def get_schema_view(info=None, url=None, patterns=None, urlconf=None, public=Fal
         permission_classes = _perm_classes
         renderer_classes = _spec_renderers
 
-        def get(self, request, version='', format=None):
+        def get(self, request, version='', format=None, tenant=None):
             version = request.version or version or ''
             if isinstance(request.accepted_renderer, _SpecRenderer):
                 generator = self.generator_class(info, version, url, patterns, urlconf)
