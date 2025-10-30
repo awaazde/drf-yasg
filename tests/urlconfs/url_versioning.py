@@ -10,18 +10,19 @@ class SnippetSerializerV2(SnippetSerializer):
     v2field = fields.IntegerField(help_text="version 2.0 field")
 
     class Meta:
-        ref_name = 'SnippetV2'
+        ref_name = "SnippetV2"
 
 
 class SnippetList(generics.ListCreateAPIView):
     """SnippetList classdoc"""
+
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     versioning_class = versioning.URLPathVersioning
 
     def get_serializer_class(self):
         context = self.get_serializer_context()
-        request = context['request']
+        request = context["request"]
         if int(float(request.version)) >= 2:
             return SnippetSerializerV2
         else:
@@ -35,6 +36,10 @@ class SnippetList(generics.ListCreateAPIView):
         return super(SnippetList, self).post(request, *args, **kwargs)
 
 
+class ExcludedSnippets(SnippetList):
+    swagger_schema = None
+
+
 VERSION_PREFIX_URL = r"^versioned/url/v(?P<version>1.0|2.0)/"
 
 
@@ -44,6 +49,10 @@ class VersionedSchemaView(SchemaView):
 
 urlpatterns = required_urlpatterns + [
     re_path(VERSION_PREFIX_URL + r"snippets/$", SnippetList.as_view()),
-    re_path(VERSION_PREFIX_URL + r'swagger(?P<format>.json|.yaml)$', VersionedSchemaView.without_ui(),
-            name='vschema-json'),
+    re_path(VERSION_PREFIX_URL + r"snippets_excluded/$", ExcludedSnippets.as_view()),
+    re_path(
+        VERSION_PREFIX_URL + r"swagger\.(?P<format>json|yaml)$",
+        VersionedSchemaView.without_ui(),
+        name="vschema-json",
+    ),
 ]

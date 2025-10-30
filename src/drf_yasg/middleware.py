@@ -4,7 +4,7 @@ from .codecs import _OpenAPICodec
 from .errors import SwaggerValidationError
 
 
-class SwaggerExceptionMiddleware(object):
+class SwaggerExceptionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -13,7 +13,7 @@ class SwaggerExceptionMiddleware(object):
 
     def process_exception(self, request, exception):
         if isinstance(exception, SwaggerValidationError):
-            err = {'errors': exception.errors, 'message': str(exception)}
+            err = {"errors": exception.errors, "message": str(exception)}
             codec = exception.source_codec
             if isinstance(codec, _OpenAPICodec):
                 err = codec.encode_error(err)
